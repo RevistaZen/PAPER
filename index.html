@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RevistaZen - DOI Gratuito para Artigos Científicos</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -16,7 +17,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            background: #f5f7fa;
         }
         
         .container {
@@ -31,6 +32,9 @@
             color: white;
             padding: 1rem 0;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
         
         .header-content {
@@ -43,6 +47,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            cursor: pointer;
         }
         
         .logo-icon {
@@ -55,14 +60,15 @@
         }
         
         .tagline {
-            font-size: 1rem;
+            font-size: 0.9rem;
             opacity: 0.9;
         }
         
         nav ul {
             display: flex;
             list-style: none;
-            gap: 2rem;
+            gap: 1.5rem;
+            align-items: center;
         }
         
         nav a {
@@ -78,32 +84,34 @@
             background: rgba(255,255,255,0.2);
         }
         
+        .nav-cta {
+            background: white;
+            color: #667eea;
+            padding: 0.7rem 1.5rem !important;
+            border-radius: 25px;
+            font-weight: 700;
+        }
+        
+        .nav-cta:hover {
+            background: #f7fafc;
+            transform: scale(1.05);
+        }
+        
+        /* Page Sections */
+        .page-section {
+            display: none;
+        }
+        
+        .page-section.active {
+            display: block;
+        }
+        
         /* Hero Section */
         .hero {
             padding: 5rem 0;
             text-align: center;
             background: white;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none"><path d="M0,0 L1000,100 L0,100 Z" fill="%23f8fafc"/></svg>');
-            background-size: 100% auto;
-            background-repeat: no-repeat;
-            background-position: bottom;
-            z-index: 1;
-        }
-        
-        .hero-content {
-            position: relative;
-            z-index: 2;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
         
         .hero h1 {
@@ -132,6 +140,8 @@
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
             transition: all 0.3s;
             margin-top: 1rem;
+            border: none;
+            cursor: pointer;
         }
         
         .cta-button:hover {
@@ -139,7 +149,7 @@
             box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
         }
         
-        /* Features Section */
+        /* Features */
         .features {
             padding: 5rem 0;
             background: #f8fafc;
@@ -176,7 +186,6 @@
             text-align: center;
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
             transition: all 0.3s;
-            border: 1px solid #e2e8f0;
         }
         
         .feature-card:hover {
@@ -198,30 +207,21 @@
             color: #2d3748;
         }
         
-        .feature-card p {
-            color: #718096;
-        }
-        
-        /* How It Works */
-        .how-it-works {
+        /* Steps */
+        .steps-section {
             padding: 5rem 0;
             background: white;
         }
         
         .steps {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 2rem;
             margin-top: 3rem;
         }
         
         .step {
-            flex: 1;
-            min-width: 250px;
-            max-width: 300px;
             text-align: center;
-            position: relative;
         }
         
         .step-number {
@@ -244,160 +244,309 @@
             color: #2d3748;
         }
         
-        .step p {
-            color: #718096;
+        /* Upload Tool Section */
+        .upload-tool {
+            padding: 3rem 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            min-height: 100vh;
         }
         
-        /* Benefits */
-        .benefits {
-            padding: 5rem 0;
-            background: #f8fafc;
-        }
-        
-        .benefits-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-        
-        .benefit-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 1rem;
+        .card {
             background: white;
-            padding: 1.5rem;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
         
-        .benefit-icon {
-            font-size: 1.5rem;
-            color: #667eea;
-            margin-top: 0.2rem;
-        }
-        
-        .benefit-content h3 {
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-            color: #2d3748;
-        }
-        
-        .benefit-content p {
-            color: #718096;
-        }
-        
-        /* Testimonials */
-        .testimonials {
-            padding: 5rem 0;
-            background: white;
-        }
-        
-        .testimonial-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-        
-        .testimonial-card {
-            background: #f8fafc;
-            padding: 2rem;
-            border-radius: 10px;
-            border-left: 4px solid #667eea;
-        }
-        
-        .testimonial-text {
-            font-style: italic;
-            margin-bottom: 1.5rem;
-            color: #4a5568;
-        }
-        
-        .testimonial-author {
+        .tool-header {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 16px;
+            margin-bottom: 24px;
         }
         
-        .author-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .icon-box {
+            background: #667eea;
+            padding: 16px;
+            border-radius: 12px;
+        }
+        
+        .icon-box i {
+            font-size: 2.5rem;
+            color: white;
+        }
+        
+        .tool-header h2 {
+            font-size: 28px;
+            color: #1a202c;
+        }
+        
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .info-box h3 {
+            color: #1e40af;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        
+        .info-box ol {
+            color: #1e40af;
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #374151;
+            font-size: 14px;
+        }
+        
+        input[type="text"],
+        input[type="password"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        textarea {
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            margin-bottom: 12px;
+        }
+        
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .drop-zone {
+            border: 3px dashed #cbd5e0;
+            border-radius: 12px;
+            padding: 60px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+        }
+        
+        .drop-zone:hover {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #e0f2fe 0%, #ddd6fe 100%);
+        }
+        
+        .drop-zone.dragover {
+            border-color: #667eea;
+            background: #dbeafe;
+        }
+        
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #667eea;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-weight: bold;
+            gap: 8px;
         }
         
-        .author-info h4 {
-            color: #2d3748;
-        }
-        
-        .author-info p {
-            color: #718096;
-            font-size: 0.9rem;
-        }
-        
-        /* CTA Section */
-        .cta-section {
-            padding: 5rem 0;
+        .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            text-align: center;
         }
         
-        .cta-section h2 {
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
         }
         
-        .cta-section p {
-            font-size: 1.2rem;
-            max-width: 700px;
-            margin: 0 auto 2rem;
-            opacity: 0.9;
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
         
-        .cta-button.white {
-            background: white;
+        .author-item {
+            background: #f9fafb;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 2px solid #e5e7eb;
+        }
+        
+        .author-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .author-row {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-small {
+            padding: 8px 16px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        
+        .btn-add {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
             color: #667eea;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            background: none;
+            border: none;
+            padding: 8px 0;
+            font-size: 14px;
         }
         
-        .cta-button.white:hover {
-            background: #f7fafc;
-            box-shadow: 0 8px 20px rgba(255,255,255,0.3);
+        .btn-test {
+            padding: 10px 20px;
+            background: #3b82f6;
+            color: white;
+            border-radius: 8px;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+        
+        .status {
+            padding: 16px;
+            border-radius: 12px;
+            border: 2px solid;
+            margin-top: 20px;
+        }
+        
+        .status-success {
+            background: #f0fdf4;
+            border-color: #86efac;
+            color: #166534;
+        }
+        
+        .status-error {
+            background: #fef2f2;
+            border-color: #fca5a5;
+            color: #991b1b;
+        }
+        
+        .status-info {
+            background: #eff6ff;
+            border-color: #93c5fd;
+            color: #1e40af;
+        }
+        
+        .status-warning {
+            background: #fffbeb;
+            border-color: #fcd34d;
+            color: #92400e;
+        }
+        
+        .spinner {
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .help-text {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+        
+        .link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .zenodo-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #10b981;
+            color: white;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
         }
         
         /* Footer */
         footer {
             background: #2d3748;
             color: white;
-            padding: 4rem 0 2rem;
+            padding: 3rem 0 1.5rem;
         }
         
         .footer-content {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 2rem;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
         }
         
         .footer-column h3 {
-            font-size: 1.3rem;
-            margin-bottom: 1.5rem;
-            position: relative;
-            padding-bottom: 0.5rem;
-        }
-        
-        .footer-column h3::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            bottom: 0;
-            width: 40px;
-            height: 3px;
-            background: #667eea;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
         }
         
         .footer-links {
@@ -405,29 +554,21 @@
         }
         
         .footer-links li {
-            margin-bottom: 0.8rem;
+            margin-bottom: 0.5rem;
         }
         
         .footer-links a {
             color: #cbd5e0;
             text-decoration: none;
-            transition: all 0.3s;
-        }
-        
-        .footer-links a:hover {
-            color: white;
-            padding-left: 5px;
         }
         
         .copyright {
             text-align: center;
-            padding-top: 2rem;
+            padding-top: 1.5rem;
             border-top: 1px solid #4a5568;
             color: #a0aec0;
-            font-size: 0.9rem;
         }
         
-        /* Responsive */
         @media (max-width: 768px) {
             .header-content {
                 flex-direction: column;
@@ -435,15 +576,16 @@
             }
             
             nav ul {
-                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
             }
             
             .hero h1 {
-                font-size: 2.5rem;
+                font-size: 2rem;
             }
             
-            .hero p {
-                font-size: 1.1rem;
+            .author-row {
+                flex-direction: column;
             }
         }
     </style>
@@ -453,230 +595,256 @@
     <header>
         <div class="container">
             <div class="header-content">
-                <div class="logo">
+                <div class="logo" onclick="showPage('home')">
                     <div class="logo-icon">
                         <i class="fas fa-scroll"></i>
                     </div>
                     <div>
                         <div class="logo-text">RevistaZen</div>
-                        <div class="tagline">DOI gratuito para artigos científicos</div>
+                        <div class="tagline">DOI gratuito para artigos</div>
                     </div>
                 </div>
                 <nav>
                     <ul>
-                        <li><a href="#features">Recursos</a></li>
-                        <li><a href="#how-it-works">Como Funciona</a></li>
-                        <li><a href="#benefits">Vantagens</a></li>
-                        <li><a href="#testimonials">Depoimentos</a></li>
-                        <li><a href="#cta" class="cta-button">Começar Agora</a></li>
+                        <li><a href="#" onclick="showPage('home')">Início</a></li>
+                        <li><a href="#" onclick="showPage('features')">Recursos</a></li>
+                        <li><a href="#" onclick="showPage('steps')">Como Funciona</a></li>
+                        <li><a href="#" onclick="showPage('upload')" class="nav-cta">
+                            <i class="fas fa-rocket"></i> Começar Agora
+                        </a></li>
                     </ul>
                 </nav>
             </div>
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <h1>Publicação Científica com DOI Gratuito</h1>
+    <!-- Home Page -->
+    <div id="homePage" class="page-section active">
+        <section class="hero">
+            <div class="container">
+                <h1>🎓 Publicação Científica com DOI Gratuito</h1>
                 <p>Obtenha um identificador DOI permanente para seu artigo científico de forma rápida, gratuita e sem complicações através da integração com o Zenodo.</p>
-                <a href="#cta" class="cta-button">
+                <button class="cta-button" onclick="showPage('upload')">
                     <i class="fas fa-rocket"></i> Obter DOI Agora
-                </a>
+                </button>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Features Section -->
-    <section class="features" id="features">
-        <div class="container">
-            <div class="section-title">
-                <h2>Recursos da Plataforma</h2>
-                <p>Uma solução completa para publicação e disseminação de pesquisa científica</p>
-            </div>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-bolt"></i>
+        <section class="features" id="features">
+            <div class="container">
+                <div class="section-title">
+                    <h2>📚 Por Que Usar a RevistaZen?</h2>
+                    <p>Uma solução completa para publicação e disseminação de pesquisa científica</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <h3>Processamento Rápido</h3>
+                        <p>Upload e processamento automático de PDFs com extração inteligente de metadados otimizada para artigos LaTeX.</p>
                     </div>
-                    <h3>Processamento Rápido</h3>
-                    <p>Upload e processamento automático de PDFs com extração inteligente de metadados otimizada para artigos LaTeX.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-fingerprint"></i>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-fingerprint"></i>
+                        </div>
+                        <h3>DOI Permanente</h3>
+                        <p>Receba um Digital Object Identifier (DOI) permanente que garante a localização e citação do seu trabalho para sempre.</p>
                     </div>
-                    <h3>DOI Permanente</h3>
-                    <p>Receba um Digital Object Identifier (DOI) permanente que garante a localização e citação do seu trabalho para sempre.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-cloud-upload-alt"></i>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <h3>Integração Zenodo</h3>
+                        <p>Publicação direta no Zenodo - repositório confiável apoiado pelo CERN e pela Comissão Europeia.</p>
                     </div>
-                    <h3>Integração Zenodo</h3>
-                    <p>Publicação direta no Zenodo - repositório confiável apoiado pelo CERN e pela Comissão Europeia.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- How It Works -->
-    <section class="how-it-works" id="how-it-works">
-        <div class="container">
-            <div class="section-title">
-                <h2>Como Funciona</h2>
-                <p>Em apenas 4 passos simples, seu artigo estará publicado com DOI</p>
-            </div>
-            <div class="steps">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <h3>Configuração</h3>
-                    <p>Configure seu token de acesso do Zenodo (oferecemos ambiente de teste para experimentação).</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <h3>Upload do Artigo</h3>
-                    <p>Faça upload do PDF do seu artigo - arraste e solte ou selecione o arquivo.</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <h3>Revisão de Metadados</h3>
-                    <p>Revise e ajuste os metadados extraídos automaticamente (título, autores, resumo, palavras-chave).</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">4</div>
-                    <h3>Publicação</h3>
-                    <p>Clique em publicar e receba instantaneamente o DOI permanente do seu artigo.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Benefits -->
-    <section class="benefits" id="benefits">
-        <div class="container">
-            <div class="section-title">
-                <h2>Vantagens do DOI para Pesquisa</h2>
-                <p>Por que todo pesquisador precisa de um DOI para seus trabalhos</p>
-            </div>
-            <div class="benefits-grid">
-                <div class="benefit-item">
-                    <div class="benefit-icon">
-                        <i class="fas fa-search"></i>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-lock-open"></i>
+                        </div>
+                        <h3>100% Gratuito</h3>
+                        <p>Sem taxas de publicação, sem custos ocultos. Contribua para o movimento de ciência aberta.</p>
                     </div>
-                    <div class="benefit-content">
-                        <h3>Visibilidade e Descoberta</h3>
-                        <p>Aumente a visibilidade do seu trabalho em mecanismos de busca acadêmica e repositórios.</p>
-                    </div>
-                </div>
-                <div class="benefit-item">
-                    <div class="benefit-icon">
-                        <i class="fas fa-quote-right"></i>
-                    </div>
-                    <div class="benefit-content">
-                        <h3>Citações Precisas</h3>
-                        <p>Facilite a citação correta do seu trabalho com um identificador único e permanente.</p>
-                    </div>
-                </div>
-                <div class="benefit-item">
-                    <div class="benefit-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="benefit-content">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
                         <h3>Métricas de Impacto</h3>
                         <p>Acompanhe o impacto da sua pesquisa através de estatísticas de acesso e citações.</p>
                     </div>
-                </div>
-                <div class="benefit-item">
-                    <div class="benefit-icon">
-                        <i class="fas fa-lock-open"></i>
-                    </div>
-                    <div class="benefit-content">
-                        <h3>Acesso Aberto</h3>
-                        <p>Contribua para o movimento de ciência aberta disponibilizando seu trabalho gratuitamente.</p>
-                    </div>
-                </div>
-                <div class="benefit-item">
-                    <div class="benefit-icon">
-                        <i class="fas fa-graduation-cap"></i>
-                    </div>
-                    <div class="benefit-content">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
                         <h3>Reconhecimento Acadêmico</h3>
                         <p>Fortaleça seu currículo e perfil de pesquisador com publicações indexadas.</p>
                     </div>
                 </div>
-                <div class="benefit-item">
-                    <div class="benefit-icon">
-                        <i class="fas fa-infinity"></i>
-                    </div>
-                    <div class="benefit-content">
-                        <h3>Preservação Digital</h3>
-                        <p>Garanta que seu trabalho permaneça acessível mesmo se o link original mudar.</p>
-                    </div>
-                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Testimonials -->
-    <section class="testimonials" id="testimonials">
-        <div class="container">
-            <div class="section-title">
-                <h2>O que os Pesquisadores Dizem</h2>
-                <p>Depoimentos de usuários satisfeitos com nossa plataforma</p>
-            </div>
-            <div class="testimonial-grid">
-                <div class="testimonial-card">
-                    <div class="testimonial-text">
-                        "Finalmente uma solução que simplifica a obtenção de DOI para pré-prints. O processo que antes levava dias agora é feito em minutos."
+        <section class="steps-section">
+            <div class="container">
+                <div class="section-title">
+                    <h2>🚀 Como Funciona</h2>
+                    <p>Em apenas 4 passos simples, seu artigo estará publicado com DOI</p>
+                </div>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <h3>🔑 Configuração</h3>
+                        <p>Configure seu token de acesso do Zenodo (oferecemos ambiente de teste para experimentação).</p>
                     </div>
-                    <div class="testimonial-author">
-                        <div class="author-avatar">MS</div>
-                        <div class="author-info">
-                            <h4>Mariana Silva</h4>
-                            <p>Doutoranda em Física</p>
-                        </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <h3>📄 Upload do Artigo</h3>
+                        <p>Faça upload do PDF do seu artigo - arraste e solte ou selecione o arquivo.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <h3>✏️ Revisão de Metadados</h3>
+                        <p>Revise e ajuste os metadados extraídos automaticamente (título, autores, resumo).</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <h3>🎯 Publicação</h3>
+                        <p>Clique em publicar e receba instantaneamente o DOI permanente do seu artigo.</p>
                     </div>
                 </div>
-                <div class="testimonial-card">
-                    <div class="testimonial-text">
-                        "A extração automática de metadados do LaTeX é incrível! Economiza tanto tempo na preparação de submissões."
-                    </div>
-                    <div class="testimonial-author">
-                        <div class="author-avatar">RC</div>
-                        <div class="author-info">
-                            <h4>Ricardo Costa</h4>
-                            <p>Pesquisador em Ciência da Computação</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="testimonial-card">
-                    <div class="testimonial-text">
-                        "Como editor de uma revista pequena, esta ferramenta foi revolucionária. Agora todos nossos artigos têm DOI desde o primeiro dia."
-                    </div>
-                    <div class="testimonial-author">
-                        <div class="author-avatar">AS</div>
-                        <div class="author-info">
-                            <h4>Ana Souza</h4>
-                            <p>Editora Chefe, Revista de Engenharia</p>
-                        </div>
-                    </div>
+                <div style="text-align: center; margin-top: 3rem;">
+                    <button class="cta-button" onclick="showPage('upload')">
+                        <i class="fas fa-paper-plane"></i> Começar Minha Publicação
+                    </button>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    </div>
 
-    <!-- CTA Section -->
-    <section class="cta-section" id="cta">
-        <div class="container">
-            <h2>Pronto para dar mais visibilidade à sua pesquisa?</h2>
-            <p>Junte-se a milhares de pesquisadores que já publicaram seus trabalhos com DOI gratuito através da RevistaZen</p>
-            <a href="#" class="cta-button white">
-                <i class="fas fa-paper-plane"></i> Publicar Artigo Agora
-            </a>
-        </div>
-    </section>
+    <!-- Upload Tool Page -->
+    <div id="uploadPage" class="page-section">
+        <section class="upload-tool">
+            <div class="container">
+                <!-- Tool Header -->
+                <div class="card">
+                    <div class="tool-header">
+                        <div class="icon-box">
+                            <i class="fas fa-file-upload"></i>
+                        </div>
+                        <div>
+                            <h2>Zenodo Article Uploader <span class="zenodo-badge">LaTeX Ready</span></h2>
+                            <p style="color: #718096;">📤 Submeta seus artigos científicos ao Zenodo automaticamente</p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-box">
+                        <h3>📖 Instruções de Uso:</h3>
+                        <ol>
+                            <li><strong>Configure seu token</strong> do Zenodo (Sandbox para testes, Production para publicação final)</li>
+                            <li><strong>Faça upload</strong> do PDF do seu artigo LaTeX</li>
+                            <li><strong>Revise os metadados</strong> extraídos automaticamente</li>
+                            <li><strong>Clique em "Submeter"</strong> para obter seu DOI permanente!</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Token Configuration -->
+                <div class="card">
+                    <h2 style="margin-bottom: 16px; font-size: 20px;">🔐 Configuração do Zenodo</h2>
+                    
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="useSandbox" checked>
+                        <span><strong>Usar Zenodo Sandbox</strong> (recomendado para testes - DOI temporário)</span>
+                    </label>
+                    
+                    <div class="form-group">
+                        <label for="zenodoToken">Token de Acesso:</label>
+                        <input type="password" id="zenodoToken" placeholder="Cole seu token aqui">
+                        <p class="help-text">
+                            🔑 Obtenha em: 
+                            <a href="https://sandbox.zenodo.org/account/settings/applications/" target="_blank" class="link">Zenodo Sandbox</a> ou 
+                            <a href="https://zenodo.org/account/settings/applications/" target="_blank" class="link">Zenodo Production</a>
+                            <br>
+                            ⚠️ Marque os scopes: <strong>deposit:write</strong> e <strong>deposit:actions</strong>
+                        </p>
+                    </div>
+                    
+                    <button onclick="testConnection()" class="btn-add btn-test">
+                        🔍 Testar Conexão com Zenodo
+                    </button>
+                </div>
+
+                <!-- File Upload -->
+                <div class="card">
+                    <h2 style="margin-bottom: 16px; font-size: 20px;">📄 Upload do Artigo</h2>
+                    
+                    <div id="dropZone" class="drop-zone">
+                        <input type="file" id="pdfFile" accept=".pdf" class="hidden">
+                        <div id="uploadPrompt">
+                            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                            <p style="font-size: 18px; font-weight: 600; color: #374151; margin-bottom: 8px;">
+                                Clique ou arraste seu PDF aqui
+                            </p>
+                            <p style="font-size: 14px; color: #6b7280;">
+                                Extração automática otimizada para PDFs LaTeX
+                            </p>
+                        </div>
+                        <div id="loadingPrompt" class="hidden">
+                            <div class="spinner" style="width: 60px; height: 60px; border-width: 4px; margin: 0 auto 16px; border-color: #667eea; border-top-color: transparent;"></div>
+                            <p style="font-size: 18px; font-weight: 600; color: #667eea;">
+                                Processando PDF...
+                            </p>
+                        </div>
+                        <div id="successPrompt" class="hidden">
+                            <i class="fas fa-check-circle" style="font-size: 60px; margin-bottom: 16px; color: #10b981;"></i>
+                            <p id="fileName" style="font-size: 18px; font-weight: 600; color: #10b981;"></p>
+                            <p style="font-size: 14px; color: #6b7280; margin-top: 8px;">
+                                Clique para trocar o arquivo
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Metadata Form -->
+                <div id="metadataForm" class="card hidden">
+                    <h2 style="margin-bottom: 16px; font-size: 20px;">📝 Metadados do Artigo</h2>
+                    
+                    <div class="form-group">
+                        <label for="title">📌 Título *</label>
+                        <input type="text" id="title" placeholder="Título completo do artigo">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">📄 Resumo/Abstract *</label>
+                        <textarea id="description" rows="6" placeholder="Resumo ou abstract do artigo"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>👥 Autores</label>
+                        <div id="authorsList"></div>
+                        <button class="btn-add" onclick="addAuthor()">
+                            <span style="font-size: 20px;">+</span> Adicionar autor
+                        </button>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="keywords">🏷️ Palavras-chave</label>
+                        <input type="text" id="keywords" placeholder="palavra1, palavra2, palavra3">
+                        <p class="help-text">Separe as palavras-chave por vírgula</p>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="card">
+                    <button id="submitBtn" class="btn btn-primary" onclick="submitToZenodo()" disabled>
+                        <span id="submitBtnText">🚀 Submeter ao Zenodo</span>
+                    </button>
+                </div>
+
+                <!-- Status Area -->
+                <div id="statusArea"></div>
+            </div>
+        </section>
+    </div>
 
     <!-- Footer -->
     <footer>
@@ -689,78 +857,568 @@
                 <div class="footer-column">
                     <h3>Links Rápidos</h3>
                     <ul class="footer-links">
-                        <li><a href="#features">Recursos</a></li>
-                        <li><a href="#how-it-works">Como Funciona</a></li>
-                        <li><a href="#benefits">Vantagens</a></li>
-                        <li><a href="#testimonials">Depoimentos</a></li>
+                        <li><a href="#" onclick="showPage('home')">Início</a></li>
+                        <li><a href="#" onclick="showPage('features')">Recursos</a></li>
+                        <li><a href="#" onclick="showPage('steps')">Como Funciona</a></li>
+                        <li><a href="#" onclick="showPage('upload')">Começar Agora</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
                     <h3>Recursos</h3>
                     <ul class="footer-links">
-                        <li><a href="#">Documentação</a></li>
-                        <li><a href="#">Tutoriais em Vídeo</a></li>
-                        <li><a href="#">Perguntas Frequentes</a></li>
-                        <li><a href="#">Política de Privacidade</a></li>
+                        <li><a href="https://zenodo.org" target="_blank">Zenodo</a></li>
+                        <li><a href="https://sandbox.zenodo.org" target="_blank">Zenodo Sandbox</a></li>
+                        <li><a href="https://help.zenodo.org" target="_blank">Ajuda Zenodo</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
-                    <h3>Contato</h3>
+                    <h3>Sobre DOI</h3>
                     <ul class="footer-links">
-                        <li><a href="mailto:contato@revistazen.com">contato@revistazen.com</a></li>
-                        <li><a href="#">Twitter</a></li>
-                        <li><a href="#">LinkedIn</a></li>
-                        <li><a href="#">GitHub</a></li>
+                        <li><a href="https://www.doi.org" target="_blank">O que é DOI?</a></li>
+                        <li><a href="#">Por que usar DOI?</a></li>
+                        <li><a href="#">Ciência Aberta</a></li>
                     </ul>
                 </div>
             </div>
             <div class="copyright">
-                <p>&copy; 2023 RevistaZen. Todos os direitos reservados.</p>
+                <p>&copy; 2025 RevistaZen. Todos os direitos reservados. | Powered by Zenodo & CERN</p>
             </div>
         </div>
     </footer>
 
     <script>
-        // Smooth scrolling for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                
-                const targetId = this.getAttribute('href');
-                if(targetId === '#') return;
-                
-                const targetElement = document.querySelector(targetId);
-                if(targetElement) {
-                    window.scrollTo({
-                        top: targetElement.offsetTop - 80,
-                        behavior: 'smooth'
-                    });
-                }
+        // PDF.js setup
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        
+        // Global variables
+        let selectedFile = null;
+        let extractedFullText = '';
+        let authors = [{
+            name: '',
+            affiliation: '',
+            orcid: ''
+        }];
+
+        // Page Navigation
+        function showPage(pageName) {
+            document.querySelectorAll('.page-section').forEach(section => {
+                section.classList.remove('active');
             });
-        });
-        
-        // Add animation on scroll
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-        
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if(entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
+            
+            if (pageName === 'home' || pageName === 'features' || pageName === 'steps') {
+                document.getElementById('homePage').classList.add('active');
+                if (pageName === 'features') {
+                    setTimeout(() => {
+                        document.querySelector('.features').scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                } else if (pageName === 'steps') {
+                    setTimeout(() => {
+                        document.querySelector('.steps-section').scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
                 }
-            });
-        }, observerOptions);
+            } else if (pageName === 'upload') {
+                document.getElementById('uploadPage').classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // Setup drag and drop
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('pdfFile');
+
+        dropZone.addEventListener('click', () => fileInput.click());
         
-        // Observe elements for animation
-        document.querySelectorAll('.feature-card, .step, .benefit-item, .testimonial-card').forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(20px)';
-            el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-            observer.observe(el);
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
         });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        // Handle file selection
+        async function handleFile(file) {
+            if (file.type !== 'application/pdf') {
+                showStatus('❌ Por favor, selecione um arquivo PDF válido.', 'error');
+                return;
+            }
+
+            selectedFile = file;
+            
+            // Update UI
+            document.getElementById('uploadPrompt').classList.add('hidden');
+            document.getElementById('successPrompt').classList.add('hidden');
+            document.getElementById('loadingPrompt').classList.remove('hidden');
+
+            // Extract text from PDF
+            await extractPDFText(file);
+        }
+
+        // Extract text from PDF using PDF.js
+        async function extractPDFText(file) {
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+                
+                // Try to get metadata from PDF properties
+                const metadata = await pdf.getMetadata();
+                let hasMetadata = false;
+                
+                if (metadata && metadata.info) {
+                    const info = metadata.info;
+                    
+                    if (info.Title && info.Title.trim().length > 0) {
+                        document.getElementById('title').value = info.Title.trim();
+                        hasMetadata = true;
+                    }
+                    
+                    if (info.Subject && info.Subject.trim().length > 0) {
+                        document.getElementById('description').value = info.Subject.trim();
+                        hasMetadata = true;
+                    }
+                    
+                    if (info.Keywords && info.Keywords.trim().length > 0) {
+                        document.getElementById('keywords').value = info.Keywords.trim();
+                        hasMetadata = true;
+                    }
+                    
+                    if (info.Author && info.Author.trim().length > 0) {
+                        const pdfAuthor = info.Author.trim();
+                        authors[0].name = pdfAuthor;
+                        hasMetadata = true;
+                    }
+                }
+                
+                // Extract full text
+                let fullText = '';
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    const pageText = textContent.items.map(item => item.str).join(' ');
+                    fullText += pageText + '\n';
+                }
+                
+                extractedFullText = fullText;
+                
+                if (!hasMetadata) {
+                    autoFillMetadata(fullText, file.name);
+                }
+                
+                renderAuthors();
+                
+                // Show form and enable submit
+                document.getElementById('metadataForm').classList.remove('hidden');
+                document.getElementById('submitBtn').disabled = false;
+
+                // Update UI
+                document.getElementById('loadingPrompt').classList.add('hidden');
+                document.getElementById('successPrompt').classList.remove('hidden');
+                document.getElementById('fileName').textContent = `✅ ${file.name}`;
+
+                showStatus('✅ PDF processado! Verifique os metadados abaixo e ajuste se necessário.', 'success');
+
+            } catch (error) {
+                console.error('Error extracting PDF:', error);
+                
+                document.getElementById('metadataForm').classList.remove('hidden');
+                document.getElementById('submitBtn').disabled = false;
+                renderAuthors();
+                
+                document.getElementById('loadingPrompt').classList.add('hidden');
+                document.getElementById('successPrompt').classList.remove('hidden');
+                document.getElementById('fileName').textContent = `✅ ${file.name}`;
+
+                showStatus('⚠️ PDF carregado. Por favor, preencha os metadados manualmente.', 'warning');
+            }
+        }
+
+        // Auto-fill metadata from text
+        function autoFillMetadata(text, filename) {
+            text = text.replace(/^[\s\S]*?(springer|nature|latex|template)[\s\S]*?\n/im, '');
+            
+            const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            
+            // TITLE EXTRACTION
+            let potentialTitle = '';
+            
+            for (let i = 0; i < Math.min(lines.length, 20); i++) {
+                const line = lines[i];
+                
+                if (line.match(/springer|nature|latex|template|preprint|draft/i)) continue;
+                if (line.match(/[@]/i)) continue;
+                if (line.match(/orcid|lattes|id:/i)) continue;
+                if (line.match(/^graduate|^faculdade|^university/i)) continue;
+                if (line.length < 30) continue;
+                if (line.length > 200) continue;
+                if (line.match(/^\d+\s/)) continue;
+                if (line.split(/\s+/).length < 5) continue;
+                if (line.match(/^[A-ZÀ-Ú\s]+$/) && line.split(/\s+/).length <= 6) continue;
+                
+                potentialTitle = line;
+                break;
+            }
+            
+            if (!potentialTitle) {
+                for (let i = 0; i < Math.min(lines.length, 30); i++) {
+                    const line = lines[i];
+                    if (line.length >= 40 && line.length <= 200) {
+                        const capitals = (line.match(/[A-Z]/g) || []).length;
+                        if (capitals >= 4) {
+                            potentialTitle = line;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            if (!potentialTitle) {
+                potentialTitle = filename.replace('.pdf', '').replace(/_/g, ' ');
+            }
+            
+            document.getElementById('title').value = potentialTitle.trim();
+
+            // ABSTRACT EXTRACTION
+            let abstract = '';
+            const abstractIndex = text.search(/\babstract\b/i);
+            if (abstractIndex !== -1) {
+                const afterAbstract = text.substring(abstractIndex + 8);
+                const endMatch = afterAbstract.search(/\b(keywords?|palavras-chave|introduction|introdução|1\s+introduction)\b/i);
+                
+                if (endMatch !== -1) {
+                    abstract = afterAbstract.substring(0, endMatch);
+                } else {
+                    abstract = afterAbstract.substring(0, 2000);
+                }
+                
+                abstract = abstract.replace(/\s+/g, ' ').replace(/\n/g, ' ').trim();
+                document.getElementById('description').value = abstract;
+            }
+
+            // KEYWORDS EXTRACTION
+            const keywordsMatch = text.match(/keywords?[:\s]+(.+?)(?:\n\n|introduction|1\s+introduction|\d+\s+\w+)/is);
+            if (keywordsMatch) {
+                let keywords = keywordsMatch[1]
+                    .replace(/\n/g, ' ')
+                    .replace(/\s+/g, ' ')
+                    .replace(/[;.]/g, ',')
+                    .trim();
+                
+                keywords = keywords.replace(/,+/g, ',').replace(/,\s*$/, '');
+                document.getElementById('keywords').value = keywords;
+            }
+
+            // AUTHOR EXTRACTION
+            const titleIndex = text.indexOf(potentialTitle);
+            const abstractStartIndex = text.search(/\babstract\b/i);
+            
+            if (titleIndex !== -1 && abstractStartIndex !== -1) {
+                const betweenTitleAndAbstract = text.substring(titleIndex + potentialTitle.length, abstractStartIndex);
+                const betweenLines = betweenTitleAndAbstract.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+                
+                let authorName = '';
+                let affiliation = '';
+                let orcid = '';
+                
+                for (let i = 0; i < betweenLines.length; i++) {
+                    const line = betweenLines[i];
+                    
+                    if (!authorName && line.match(/^[A-ZÀ-Ú][A-ZÀ-Úa-zà-ú\s]+$/) && line.split(/\s+/).length >= 2 && line.split(/\s+/).length <= 6) {
+                        authorName = line;
+                        continue;
+                    }
+                    
+                    if (authorName && !affiliation && line.match(/graduate|faculdade|university|instituto|college/i)) {
+                        affiliation = line.replace(/@.*$/, '').replace(/lattes.*$/i, '').replace(/orcid.*$/i, '').trim();
+                        continue;
+                    }
+                    
+                    const orcidMatch = line.match(/orcid[:\s]+([0-9-]+)/i);
+                    if (orcidMatch) {
+                        orcid = orcidMatch[1];
+                    }
+                }
+                
+                if (authorName) {
+                    authors = [{
+                        name: authorName,
+                        affiliation: affiliation || '',
+                        orcid: orcid || ''
+                    }];
+                }
+            }
+
+            renderAuthors();
+        }
+
+        // Render authors list
+        function renderAuthors() {
+            const container = document.getElementById('authorsList');
+            container.innerHTML = '';
+            
+            authors.forEach((author, index) => {
+                const authorDiv = document.createElement('div');
+                authorDiv.className = 'author-item';
+                authorDiv.innerHTML = `
+                    <div class="author-inputs">
+                        <input type="text" value="${author.name}" onchange="updateAuthor(${index}, 'name', this.value)" placeholder="Nome completo" style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 6px;">
+                        <input type="text" value="${author.affiliation}" onchange="updateAuthor(${index}, 'affiliation', this.value)" placeholder="Instituição/Afiliação" style="width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 6px;">
+                        <div class="author-row">
+                            <input type="text" value="${author.orcid}" onchange="updateAuthor(${index}, 'orcid', this.value)" placeholder="ORCID (opcional)" style="flex: 1; padding: 10px; border: 1px solid #e5e7eb; border-radius: 6px;">
+                            ${authors.length > 1 ? `<button onclick="removeAuthor(${index})" class="btn-small">Remover</button>` : ''}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(authorDiv);
+            });
+        }
+
+        function addAuthor() {
+            authors.push({ name: '', affiliation: '', orcid: '' });
+            renderAuthors();
+        }
+
+        function updateAuthor(index, field, value) {
+            authors[index][field] = value;
+        }
+
+        function removeAuthor(index) {
+            if (authors.length > 1) {
+                authors.splice(index, 1);
+                renderAuthors();
+            }
+        }
+
+        // Test connection with Zenodo
+        async function testConnection() {
+            const token = document.getElementById('zenodoToken').value;
+            const useSandbox = document.getElementById('useSandbox').checked;
+            
+            if (!token) {
+                showStatus('❌ Por favor, insira seu token primeiro!', 'error');
+                return;
+            }
+            
+            const baseUrl = useSandbox 
+                ? 'https://sandbox.zenodo.org/api'
+                : 'https://zenodo.org/api';
+            
+            showStatus('🔍 Testando conexão com Zenodo...', 'info');
+            
+            try {
+                const userResponse = await fetch(`${baseUrl}/deposit/depositions`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                let resultMsg = `<strong>📊 Resultado do Teste:</strong><br><br>`;
+                resultMsg += `<strong>URL:</strong> ${baseUrl}<br>`;
+                resultMsg += `<strong>Status:</strong> ${userResponse.status}<br><br>`;
+                
+                if (userResponse.ok) {
+                    const data = await userResponse.json();
+                    resultMsg += `✅ <strong>Token VÁLIDO!</strong><br>`;
+                    resultMsg += `Você tem ${data.length} depósito(s) existente(s).<br><br>`;
+                    resultMsg += `Agora você pode submeter seus artigos!`;
+                    showStatus(resultMsg, 'success');
+                } else {
+                    resultMsg += `❌ <strong>ERRO ${userResponse.status}</strong><br><br>`;
+                    
+                    if (userResponse.status === 403) {
+                        resultMsg += `<strong>Problema:</strong> Token sem permissões corretas<br><br>`;
+                        resultMsg += `<strong>Solução:</strong><br>`;
+                        resultMsg += `1. Vá em: <a href="${useSandbox ? 'https://sandbox.zenodo.org' : 'https://zenodo.org'}/account/settings/applications/" target="_blank" class="link">Settings → Applications</a><br>`;
+                        resultMsg += `2. Delete o token antigo<br>`;
+                        resultMsg += `3. Crie um NOVO token<br>`;
+                        resultMsg += `4. MARQUE os scopes: <code>deposit:write</code> e <code>deposit:actions</code><br>`;
+                        resultMsg += `5. Copie o novo token e cole aqui`;
+                    } else if (userResponse.status === 401) {
+                        resultMsg += `<strong>Problema:</strong> Token inválido<br><br>`;
+                        resultMsg += `<strong>Solução:</strong><br>`;
+                        resultMsg += `- Certifique-se de copiar o token COMPLETO<br>`;
+                        resultMsg += `- Não deve ter espaços no início ou fim`;
+                    }
+                    
+                    showStatus(resultMsg, 'error');
+                }
+                
+            } catch (error) {
+                showStatus(`❌ Erro de conexão: ${error.message}<br><br>Verifique sua internet ou se o Zenodo está acessível.`, 'error');
+            }
+        }
+
+        // Submit to Zenodo
+        async function submitToZenodo() {
+            const token = document.getElementById('zenodoToken').value;
+            const useSandbox = document.getElementById('useSandbox').checked;
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const keywords = document.getElementById('keywords').value;
+
+            if (!selectedFile) {
+                showStatus('❌ Por favor, selecione um arquivo PDF.', 'error');
+                return;
+            }
+
+            if (!token) {
+                showStatus('❌ Por favor, insira seu token do Zenodo.', 'error');
+                return;
+            }
+
+            if (!title || !description) {
+                showStatus('❌ Por favor, preencha o título e a descrição.', 'error');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            const submitBtnText = document.getElementById('submitBtnText');
+            submitBtn.disabled = true;
+            submitBtnText.innerHTML = '<div class="spinner"></div> Processando...';
+
+            const baseUrl = useSandbox 
+                ? 'https://sandbox.zenodo.org/api'
+                : 'https://zenodo.org/api';
+
+            try {
+                showStatus('📝 Criando depósito no Zenodo...', 'info');
+                const createResponse = await fetch(`${baseUrl}/deposit/depositions`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                });
+
+                if (!createResponse.ok) {
+                    throw new Error(`Erro ao criar depósito (${createResponse.status})`);
+                }
+
+                const deposit = await createResponse.json();
+
+                showStatus('📤 Fazendo upload do arquivo PDF...', 'info');
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+
+                const uploadResponse = await fetch(`${baseUrl}/deposit/depositions/${deposit.id}/files`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+
+                if (!uploadResponse.ok) {
+                    throw new Error(`Erro ao fazer upload (${uploadResponse.status})`);
+                }
+
+                showStatus('📋 Atualizando metadados...', 'info');
+                const keywordsArray = keywords.split(',').map(k => k.trim()).filter(k => k.length > 0);
+                
+                const metadata = {
+                    metadata: {
+                        title: title,
+                        upload_type: 'publication',
+                        publication_type: 'article',
+                        description: description,
+                        creators: authors.filter(a => a.name.trim().length > 0),
+                        keywords: keywordsArray.length > 0 ? keywordsArray : undefined
+                    }
+                };
+
+                const metadataResponse = await fetch(`${baseUrl}/deposit/depositions/${deposit.id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(metadata)
+                });
+
+                if (!metadataResponse.ok) {
+                    throw new Error(`Erro ao atualizar metadados (${metadataResponse.status})`);
+                }
+
+                showStatus('🎯 Publicando artigo...', 'info');
+                const publishResponse = await fetch(`${baseUrl}/deposit/depositions/${deposit.id}/actions/publish`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!publishResponse.ok) {
+                    throw new Error(`Erro ao publicar (${publishResponse.status})`);
+                }
+
+                const published = await publishResponse.json();
+                const zenodoLink = useSandbox 
+                    ? `https://sandbox.zenodo.org/records/${deposit.id}`
+                    : `https://zenodo.org/records/${deposit.id}`;
+
+                let successMsg = `<strong>🎉 Artigo publicado com sucesso!</strong><br><br>`;
+                successMsg += `<div style="background: #f0fdf4; padding: 16px; border-radius: 8px; border: 2px solid #86efac; margin: 12px 0;">`;
+                successMsg += `<p style="margin-bottom: 8px;"><strong>🎯 DOI:</strong></p>`;
+                successMsg += `<a href="https://doi.org/${published.doi}" target="_blank" style="color: #667eea; word-break: break-all; font-family: monospace;">${published.doi}</a>`;
+                successMsg += `</div>`;
+                successMsg += `<div style="background: white; padding: 16px; border-radius: 8px; border: 2px solid #93c5fd;">`;
+                successMsg += `<p style="margin-bottom: 8px;"><strong>🔗 Link direto do Zenodo:</strong></p>`;
+                successMsg += `<a href="${zenodoLink}" target="_blank" style="color: #667eea; word-break: break-all;">${zenodoLink}</a>`;
+                successMsg += `</div>`;
+                
+                if (useSandbox) {
+                    successMsg += `<br><p style="color: #f59e0b; font-weight: 600;">⚠️ Este é um DOI de TESTE (Sandbox). Para publicação real, desmarque "Usar Zenodo Sandbox".</p>`;
+                }
+                
+                showStatus(successMsg, 'success');
+                submitBtnText.textContent = '✅ Publicado com Sucesso!';
+
+            } catch (error) {
+                console.error('Error:', error);
+                showStatus(`❌ ${error.message}`, 'error');
+                submitBtn.disabled = false;
+                submitBtnText.textContent = '🚀 Submeter ao Zenodo';
+            }
+        }
+
+        // Show status message
+        function showStatus(message, type) {
+            const statusArea = document.getElementById('statusArea');
+            const classes = {
+                success: 'status-success',
+                error: 'status-error',
+                warning: 'status-warning',
+                info: 'status-info'
+            };
+
+            statusArea.innerHTML = `
+                <div class="card status ${classes[type]}">
+                    ${message}
+                </div>
+            `;
+            
+            statusArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Initialize
+        renderAuthors();
     </script>
 </body>
 </html>
