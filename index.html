@@ -762,29 +762,7 @@
                     <input type="hidden" id="useSandbox" value="false">
                     <input type="hidden" id="zenodoToken" value="zt6K48OLbFjR9HWthyD7oojxf8uR4poFfvwAhHAdXxk9ugZEZmDv3ekMLNQC">
                     
-                    <details style="margin-top: 16px;">
-                        <summary style="cursor: pointer; color: #667eea; font-weight: 600; padding: 8px 0;">
-                            ⚙️ Usar token personalizado (avançado)
-                        </summary>
-                        <div style="margin-top: 12px; padding: 16px; background: #f8fafc; border-radius: 8px;">
-                            <div class="form-group" style="margin-bottom: 12px;">
-                                <label for="customToken">Token Personalizado:</label>
-                                <input type="password" id="customToken" placeholder="Cole seu token personalizado aqui">
-                                <p class="help-text">
-                                    🔑 Obtenha em: 
-                                    <a href="https://sandbox.zenodo.org/account/settings/applications/" target="_blank" class="link">Zenodo Sandbox</a> ou 
-                                    <a href="https://zenodo.org/account/settings/applications/" target="_blank" class="link">Zenodo Production</a>
-                                </p>
-                            </div>
-                            <button onclick="useCustomToken()" class="btn-add btn-test" style="margin-top: 0;">
-                                🔄 Usar Token Personalizado
-                            </button>
-                        </div>
-                    </details>
-                    
-                    <button onclick="testConnection()" class="btn-add btn-test">
-                        🔍 Testar Conexão com Zenodo
-                    </button>
+
                 </div>
 
                 <!-- File Upload -->
@@ -1218,54 +1196,14 @@
             }
         }
 
-        // Test connection with Zenodo
+        // Test connection with Zenodo (removed - not needed for users)
         async function testConnection() {
-            const token = document.getElementById('zenodoToken').value;
-            const useSandbox = false;
-            
-            const baseUrl = 'https://zenodo.org/api';
-            
-            showStatus('🔍 Testando conexão com Zenodo...', 'info');
-            
-            try {
-                const userResponse = await fetch(`${baseUrl}/deposit/depositions`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                
-                let resultMsg = `<strong>📊 Resultado do Teste:</strong><br><br>`;
-                resultMsg += `<strong>Ambiente:</strong> Production (Oficial) ✅<br>`;
-                resultMsg += `<strong>Status:</strong> ${userResponse.status}<br><br>`;
-                
-                if (userResponse.ok) {
-                    const data = await userResponse.json();
-                    resultMsg += `✅ <strong>Conexão estabelecida com sucesso!</strong><br>`;
-                    resultMsg += `Sistema pronto para receber publicações oficiais.<br><br>`;
-                    resultMsg += `<strong>📚 Artigos publicados:</strong> ${data.length}<br><br>`;
-                    resultMsg += `Você pode submeter seu artigo agora e receber um DOI permanente! 🚀`;
-                    showStatus(resultMsg, 'success');
-                } else {
-                    resultMsg += `❌ <strong>ERRO ${userResponse.status}</strong><br><br>`;
-                    resultMsg += `Não foi possível conectar ao Zenodo. Entre em contato com o suporte da RevistaZen.`;
-                    showStatus(resultMsg, 'error');
-                }
-                
-            } catch (error) {
-                showStatus(`❌ Erro de conexão: ${error.message}<br><br>Verifique sua internet ou entre em contato com o suporte.`, 'error');
-            }
+            showStatus('ℹ️ O sistema está configurado e pronto para uso. Faça upload do seu PDF para começar!', 'info');
         }
 
-        // Use custom token
+        // Use custom token (removed - not needed)
         function useCustomToken() {
-            const customToken = document.getElementById('customToken').value;
-            if (!customToken) {
-                showStatus('❌ Por favor, insira um token personalizado primeiro!', 'error');
-                return;
-            }
-            document.getElementById('zenodoToken').value = customToken;
-            showStatus('✅ Token personalizado configurado! Faça um teste de conexão para verificar.', 'success');
+            showStatus('ℹ️ O sistema usa configuração padrão da RevistaZen.', 'info');
         }
 
         // Submit to Zenodo
@@ -1374,23 +1312,23 @@
                 
                 successMsg += `<div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); padding: 24px; border-radius: 16px; border: 3px solid #10b981; margin: 24px 0; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);">`;
                 successMsg += `<div style="text-align: center; margin-bottom: 16px;">`;
-                successMsg += `<p style="font-size: 1.2rem; color: #166534; font-weight: 700; margin-bottom: 16px;">🎯 SEU DOI PERMANENTE OFICIAL</p>`;
+                successMsg += `<p style="font-size: 1.2rem; color: #166534; font-weight: 700; margin-bottom: 16px;">🎯 SEU DOI PERMANENTE</p>`;
                 successMsg += `</div>`;
                 successMsg += `<div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">`;
                 successMsg += `<a href="https://doi.org/${published.doi}" target="_blank" style="color: #667eea; word-break: break-all; font-family: 'Courier New', monospace; font-size: 1.3rem; font-weight: bold; display: block; text-align: center;">${published.doi}</a>`;
                 successMsg += `</div>`;
-                successMsg += `<p style="margin-top: 16px; color: #166534; font-size: 1rem; text-align: center; font-weight: 600;">✅ Use este DOI para citar seu trabalho em currículos, Lattes e publicações!</p>`;
+                successMsg += `<p style="margin-top: 16px; color: #166534; font-size: 1rem; text-align: center; font-weight: 600;">✅ Use este DOI único para citar seu trabalho em currículos, Lattes e publicações!</p>`;
                 successMsg += `</div>`;
                 
                 successMsg += `<div style="background: white; padding: 20px; border-radius: 12px; border: 2px solid #93c5fd; margin: 20px 0;">`;
-                successMsg += `<p style="margin-bottom: 12px; font-weight: 600; color: #1e40af;"><i class="fas fa-link"></i> Link da Publicação no Zenodo:</p>`;
+                successMsg += `<p style="margin-bottom: 12px; font-weight: 600; color: #1e40af;"><i class="fas fa-link"></i> Link da Publicação:</p>`;
                 successMsg += `<a href="${zenodoLink}" target="_blank" style="color: #667eea; word-break: break-all; font-size: 1rem;">${zenodoLink}</a>`;
                 successMsg += `<p style="margin-top: 12px; color: #4b5563; font-size: 0.9rem;">📊 Acesse para ver estatísticas de visualizações e downloads</p>`;
                 successMsg += `</div>`;
                 
                 successMsg += `<div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); padding: 20px; border-radius: 12px; border: 2px solid #3b82f6; margin-top: 24px; text-align: center;">`;
-                successMsg += `<p style="color: #1e40af; font-weight: 700; font-size: 1.2rem; margin: 0;">✨ DOI OFICIAL REGISTRADO NO ZENODO</p>`;
-                successMsg += `<p style="color: #1e40af; margin: 12px 0 0 0; font-size: 1rem;">Seu artigo está agora permanentemente indexado e disponível para citação científica</p>`;
+                successMsg += `<p style="color: #1e40af; font-weight: 700; font-size: 1.2rem; margin: 0;">✨ PUBLICAÇÃO OFICIAL REGISTRADA</p>`;
+                successMsg += `<p style="color: #1e40af; margin: 12px 0 0 0; font-size: 1rem;">Seu artigo está permanentemente indexado no Zenodo com um único DOI oficial</p>`;
                 successMsg += `<div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #93c5fd;">`;
                 successMsg += `<p style="color: #4b5563; font-size: 0.9rem; margin: 0;"><i class="fas fa-check-circle" style="color: #10b981;"></i> Indexado no Google Scholar</p>`;
                 successMsg += `<p style="color: #4b5563; font-size: 0.9rem; margin: 4px 0 0 0;"><i class="fas fa-check-circle" style="color: #10b981;"></i> Citável via DOI permanente</p>`;
