@@ -749,24 +749,45 @@
 
                 <!-- Token Configuration -->
                 <div class="card">
-                    <h2 style="margin-bottom: 16px; font-size: 20px;">🔐 Configuração do Zenodo</h2>
+                    <h2 style="margin-bottom: 16px; font-size: 20px;">🔐 Configuração Automática</h2>
+                    
+                    <div class="info-box" style="background: #f0fdf4; border-left-color: #10b981;">
+                        <h3 style="color: #166534;">✅ Token Configurado Automaticamente!</h3>
+                        <p style="color: #166534; margin: 8px 0 0 0;">
+                            A RevistaZen utiliza um token padrão da revista para facilitar sua experiência. 
+                            Você não precisa se preocupar com configurações técnicas - basta fazer upload do seu artigo e publicar!
+                        </p>
+                    </div>
                     
                     <label class="checkbox-label">
                         <input type="checkbox" id="useSandbox" checked>
-                        <span><strong>Usar Zenodo Sandbox</strong> (recomendado para testes - DOI temporário)</span>
+                        <span><strong>Modo Sandbox (Teste)</strong> - Recomendado para primeira publicação</span>
                     </label>
+                    <p class="help-text" style="margin-left: 28px; margin-top: -8px;">
+                        💡 Desmarque para publicação oficial com DOI permanente
+                    </p>
                     
-                    <div class="form-group">
-                        <label for="zenodoToken">Token de Acesso:</label>
-                        <input type="password" id="zenodoToken" placeholder="Cole seu token aqui">
-                        <p class="help-text">
-                            🔑 Obtenha em: 
-                            <a href="https://sandbox.zenodo.org/account/settings/applications/" target="_blank" class="link">Zenodo Sandbox</a> ou 
-                            <a href="https://zenodo.org/account/settings/applications/" target="_blank" class="link">Zenodo Production</a>
-                            <br>
-                            ⚠️ Marque os scopes: <strong>deposit:write</strong> e <strong>deposit:actions</strong>
-                        </p>
-                    </div>
+                    <input type="hidden" id="zenodoToken" value="IDyAgC26mnGG2k93GFbaca3Cs0CF3QeZefdjX12w2OLgtKyeEvHGLB404H2K">
+                    
+                    <details style="margin-top: 16px;">
+                        <summary style="cursor: pointer; color: #667eea; font-weight: 600; padding: 8px 0;">
+                            ⚙️ Usar token personalizado (avançado)
+                        </summary>
+                        <div style="margin-top: 12px; padding: 16px; background: #f8fafc; border-radius: 8px;">
+                            <div class="form-group" style="margin-bottom: 12px;">
+                                <label for="customToken">Token Personalizado:</label>
+                                <input type="password" id="customToken" placeholder="Cole seu token personalizado aqui">
+                                <p class="help-text">
+                                    🔑 Obtenha em: 
+                                    <a href="https://sandbox.zenodo.org/account/settings/applications/" target="_blank" class="link">Zenodo Sandbox</a> ou 
+                                    <a href="https://zenodo.org/account/settings/applications/" target="_blank" class="link">Zenodo Production</a>
+                                </p>
+                            </div>
+                            <button onclick="useCustomToken()" class="btn-add btn-test" style="margin-top: 0;">
+                                🔄 Usar Token Personalizado
+                            </button>
+                        </div>
+                    </details>
                     
                     <button onclick="testConnection()" class="btn-add btn-test">
                         🔍 Testar Conexão com Zenodo
@@ -1209,11 +1230,6 @@
             const token = document.getElementById('zenodoToken').value;
             const useSandbox = document.getElementById('useSandbox').checked;
             
-            if (!token) {
-                showStatus('❌ Por favor, insira seu token primeiro!', 'error');
-                return;
-            }
-            
             const baseUrl = useSandbox 
                 ? 'https://sandbox.zenodo.org/api'
                 : 'https://zenodo.org/api';
@@ -1229,39 +1245,36 @@
                 });
                 
                 let resultMsg = `<strong>📊 Resultado do Teste:</strong><br><br>`;
-                resultMsg += `<strong>URL:</strong> ${baseUrl}<br>`;
+                resultMsg += `<strong>Ambiente:</strong> ${useSandbox ? 'Sandbox (Teste)' : 'Production (Oficial)'}<br>`;
                 resultMsg += `<strong>Status:</strong> ${userResponse.status}<br><br>`;
                 
                 if (userResponse.ok) {
                     const data = await userResponse.json();
-                    resultMsg += `✅ <strong>Token VÁLIDO!</strong><br>`;
-                    resultMsg += `Você tem ${data.length} depósito(s) existente(s).<br><br>`;
-                    resultMsg += `Agora você pode submeter seus artigos!`;
+                    resultMsg += `✅ <strong>Conexão estabelecida com sucesso!</strong><br>`;
+                    resultMsg += `Sistema pronto para receber publicações.<br><br>`;
+                    resultMsg += `<strong>📚 Depósitos na conta:</strong> ${data.length}<br><br>`;
+                    resultMsg += `Você pode submeter seu artigo agora! 🚀`;
                     showStatus(resultMsg, 'success');
                 } else {
                     resultMsg += `❌ <strong>ERRO ${userResponse.status}</strong><br><br>`;
-                    
-                    if (userResponse.status === 403) {
-                        resultMsg += `<strong>Problema:</strong> Token sem permissões corretas<br><br>`;
-                        resultMsg += `<strong>Solução:</strong><br>`;
-                        resultMsg += `1. Vá em: <a href="${useSandbox ? 'https://sandbox.zenodo.org' : 'https://zenodo.org'}/account/settings/applications/" target="_blank" class="link">Settings → Applications</a><br>`;
-                        resultMsg += `2. Delete o token antigo<br>`;
-                        resultMsg += `3. Crie um NOVO token<br>`;
-                        resultMsg += `4. MARQUE os scopes: <code>deposit:write</code> e <code>deposit:actions</code><br>`;
-                        resultMsg += `5. Copie o novo token e cole aqui`;
-                    } else if (userResponse.status === 401) {
-                        resultMsg += `<strong>Problema:</strong> Token inválido<br><br>`;
-                        resultMsg += `<strong>Solução:</strong><br>`;
-                        resultMsg += `- Certifique-se de copiar o token COMPLETO<br>`;
-                        resultMsg += `- Não deve ter espaços no início ou fim`;
-                    }
-                    
+                    resultMsg += `Não foi possível conectar ao Zenodo. Tente novamente ou entre em contato com o suporte.`;
                     showStatus(resultMsg, 'error');
                 }
                 
             } catch (error) {
                 showStatus(`❌ Erro de conexão: ${error.message}<br><br>Verifique sua internet ou se o Zenodo está acessível.`, 'error');
             }
+        }
+
+        // Use custom token
+        function useCustomToken() {
+            const customToken = document.getElementById('customToken').value;
+            if (!customToken) {
+                showStatus('❌ Por favor, insira um token personalizado primeiro!', 'error');
+                return;
+            }
+            document.getElementById('zenodoToken').value = customToken;
+            showStatus('✅ Token personalizado configurado! Faça um teste de conexão para verificar.', 'success');
         }
 
         // Submit to Zenodo
@@ -1274,11 +1287,6 @@
 
             if (!selectedFile) {
                 showStatus('❌ Por favor, selecione um arquivo PDF.', 'error');
-                return;
-            }
-
-            if (!token) {
-                showStatus('❌ Por favor, insira seu token do Zenodo.', 'error');
                 return;
             }
 
@@ -1373,18 +1381,32 @@
                     ? `https://sandbox.zenodo.org/records/${deposit.id}`
                     : `https://zenodo.org/records/${deposit.id}`;
 
-                let successMsg = `<strong>🎉 Artigo publicado com sucesso!</strong><br><br>`;
-                successMsg += `<div style="background: #f0fdf4; padding: 16px; border-radius: 8px; border: 2px solid #86efac; margin: 12px 0;">`;
-                successMsg += `<p style="margin-bottom: 8px;"><strong>🎯 DOI:</strong></p>`;
-                successMsg += `<a href="https://doi.org/${published.doi}" target="_blank" style="color: #667eea; word-break: break-all; font-family: monospace;">${published.doi}</a>`;
+                let successMsg = `<div style="text-align: center;">`;
+                successMsg += `<h3 style="color: #10b981; font-size: 2rem; margin-bottom: 1rem;">🎉 Parabéns!</h3>`;
+                successMsg += `<p style="font-size: 1.2rem; margin-bottom: 2rem;">Seu artigo foi publicado com sucesso na <strong>RevistaZen</strong>!</p>`;
                 successMsg += `</div>`;
-                successMsg += `<div style="background: white; padding: 16px; border-radius: 8px; border: 2px solid #93c5fd;">`;
-                successMsg += `<p style="margin-bottom: 8px;"><strong>🔗 Link direto do Zenodo:</strong></p>`;
-                successMsg += `<a href="${zenodoLink}" target="_blank" style="color: #667eea; word-break: break-all;">${zenodoLink}</a>`;
+                
+                successMsg += `<div style="background: #f0fdf4; padding: 20px; border-radius: 12px; border: 3px solid #86efac; margin: 20px 0;">`;
+                successMsg += `<p style="margin-bottom: 12px; font-size: 1.1rem;"><strong>🎯 Seu DOI Permanente:</strong></p>`;
+                successMsg += `<a href="https://doi.org/${published.doi}" target="_blank" style="color: #667eea; word-break: break-all; font-family: monospace; font-size: 1.2rem; font-weight: bold;">${published.doi}</a>`;
+                successMsg += `<p style="margin-top: 12px; color: #166534; font-size: 0.95rem;">✅ Use este DOI para citar seu trabalho em currículos e publicações!</p>`;
+                successMsg += `</div>`;
+                
+                successMsg += `<div style="background: white; padding: 20px; border-radius: 12px; border: 2px solid #93c5fd; margin: 20px 0;">`;
+                successMsg += `<p style="margin-bottom: 12px;"><strong>🔗 Link da Publicação:</strong></p>`;
+                successMsg += `<a href="${zenodoLink}" target="_blank" style="color: #667eea; word-break: break-all; font-size: 1rem;">${zenodoLink}</a>`;
                 successMsg += `</div>`;
                 
                 if (useSandbox) {
-                    successMsg += `<br><p style="color: #f59e0b; font-weight: 600;">⚠️ Este é um DOI de TESTE (Sandbox). Para publicação real, desmarque "Usar Zenodo Sandbox".</p>`;
+                    successMsg += `<div style="background: #fffbeb; padding: 16px; border-radius: 8px; border: 2px solid #fcd34d; margin-top: 20px;">`;
+                    successMsg += `<p style="color: #92400e; font-weight: 600; margin: 0;">⚠️ <strong>Atenção:</strong> Este é um DOI de TESTE (Sandbox).</p>`;
+                    successMsg += `<p style="color: #92400e; margin: 8px 0 0 0; font-size: 0.95rem;">Para obter um DOI oficial e permanente, desmarque "Modo Sandbox" e publique novamente.</p>`;
+                    successMsg += `</div>`;
+                } else {
+                    successMsg += `<div style="background: #eff6ff; padding: 16px; border-radius: 8px; border: 2px solid #3b82f6; margin-top: 20px; text-align: center;">`;
+                    successMsg += `<p style="color: #1e40af; font-weight: 600; margin: 0;">✨ <strong>DOI Oficial Registrado!</strong></p>`;
+                    successMsg += `<p style="color: #1e40af; margin: 8px 0 0 0;">Seu artigo está agora oficialmente publicado e indexado no Zenodo.</p>`;
+                    successMsg += `</div>`;
                 }
                 
                 showStatus(successMsg, 'success');
@@ -1392,7 +1414,7 @@
 
             } catch (error) {
                 console.error('Error:', error);
-                showStatus(`❌ ${error.message}`, 'error');
+                showStatus(`❌ ${error.message}<br><br>Se o problema persistir, entre em contato com o suporte.`, 'error');
                 submitBtn.disabled = false;
                 submitBtnText.textContent = '🚀 Submeter ao Zenodo';
             }
