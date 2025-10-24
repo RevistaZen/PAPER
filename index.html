@@ -648,8 +648,8 @@
                         <div class="feature-icon">
                             <i class="fas fa-fingerprint"></i>
                         </div>
-                        <h3>DOI Permanente</h3>
-                        <p>Receba um Digital Object Identifier (DOI) permanente que garante a localização e citação do seu trabalho para sempre.</p>
+                        <h3>DOI Único e Permanente</h3>
+                        <p>Cada artigo recebe um Digital Object Identifier (DOI) único e permanente que garante identificação e citação precisas.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">
@@ -687,13 +687,13 @@
             <div class="container">
                 <div class="section-title">
                     <h2>🚀 Como Funciona</h2>
-                    <p>Em apenas 4 passos simples, seu artigo estará publicado com DOI</p>
+                    <p>Em apenas 4 passos simples, seu artigo estará publicado com DOI único</p>
                 </div>
                 <div class="steps">
                     <div class="step">
                         <div class="step-number">1</div>
-                        <h3>🔑 Configuração</h3>
-                        <p>Configure seu token de acesso do Zenodo (oferecemos ambiente de teste para experimentação).</p>
+                        <h3>🔑 Sistema Configurado</h3>
+                        <p>A RevistaZen já está configurada com token oficial - pronto para uso imediato.</p>
                     </div>
                     <div class="step">
                         <div class="step-number">2</div>
@@ -708,7 +708,7 @@
                     <div class="step">
                         <div class="step-number">4</div>
                         <h3>🎯 Publicação</h3>
-                        <p>Clique em publicar e receba instantaneamente o DOI permanente do seu artigo.</p>
+                        <p>Clique em publicar e receba instantaneamente o DOI único e permanente do seu artigo.</p>
                     </div>
                 </div>
                 <div style="text-align: center; margin-top: 3rem;">
@@ -739,28 +739,27 @@
                     <div class="info-box">
                         <h3>📖 Instruções de Uso:</h3>
                         <ol>
-                            <li><strong>Configure seu token</strong> do Zenodo (Sandbox para testes, Production para publicação final)</li>
                             <li><strong>Faça upload</strong> do PDF do seu artigo LaTeX</li>
                             <li><strong>Revise os metadados</strong> extraídos automaticamente</li>
-                            <li><strong>Clique em "Submeter"</strong> para obter seu DOI permanente!</li>
+                            <li><strong>Clique em "Submeter"</strong> para obter seu DOI único e permanente!</li>
                         </ol>
                     </div>
                 </div>
 
                 <!-- Token Configuration -->
                 <div class="card">
-                    <h2 style="margin-bottom: 16px; font-size: 20px;">🔐 Configuração Automática</h2>
+                    <h2 style="margin-bottom: 16px; font-size: 20px;">🔐 Sistema Oficial RevistaZen</h2>
                     
                     <div class="info-box" style="background: #f0fdf4; border-left-color: #10b981;">
                         <h3 style="color: #166534;">✅ Sistema Pronto para Publicação Oficial!</h3>
                         <p style="color: #166534; margin: 8px 0 0 0;">
                             A RevistaZen está configurada para gerar <strong>DOIs permanentes oficiais</strong> automaticamente. 
-                            Basta fazer upload do seu artigo e publicar - você receberá um DOI válido e permanente imediatamente!
+                            <strong>Cada artigo recebe apenas um DOI único.</strong> Basta fazer upload do seu artigo e publicar - você receberá um DOI válido e permanente imediatamente!
                         </p>
                     </div>
                     
                     <input type="hidden" id="useSandbox" value="false">
-                    <input type="hidden" id="zenodoToken" value="zt6K48OLbFjR9HWthyD7oojxf8uR4poFfvwAhHAdXxk9ugZEZmDv3ekMLNQC">
+                    <input type="hidden" id="zenodoToken" value="snGaAx2LeJtvWLWTyMT9Ci4s4Jmj6Thvmr6iSixjrmsKRMbYGbqeQhAnYs3J">
                 </div>
 
                 <!-- File Upload -->
@@ -842,7 +841,7 @@
             <div class="footer-content">
                 <div class="footer-column">
                     <h3>RevistaZen</h3>
-                    <p>Plataforma de publicação científica com DOI gratuito através da integração com o Zenodo.</p>
+                    <p>Plataforma de publicação científica com DOI gratuito através da integração com o Zenodo. Cada artigo recebe um DOI único e permanente.</p>
                 </div>
                 <div class="footer-column">
                     <h3>Links Rápidos</h3>
@@ -1194,16 +1193,6 @@
             }
         }
 
-        // Test connection with Zenodo (removed - not needed for users)
-        async function testConnection() {
-            showStatus('ℹ️ O sistema está configurado e pronto para uso. Faça upload do seu PDF para começar!', 'info');
-        }
-
-        // Use custom token (removed - not needed)
-        function useCustomToken() {
-            showStatus('ℹ️ O sistema usa configuração padrão da RevistaZen.', 'info');
-        }
-
         // Submit to Zenodo
         async function submitToZenodo() {
             const token = document.getElementById('zenodoToken').value;
@@ -1310,12 +1299,12 @@
                 
                 successMsg += `<div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); padding: 24px; border-radius: 16px; border: 3px solid #10b981; margin: 24px 0; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);">`;
                 successMsg += `<div style="text-align: center; margin-bottom: 16px;">`;
-                successMsg += `<p style="font-size: 1.2rem; color: #166534; font-weight: 700; margin-bottom: 16px;">🎯 SEU DOI PERMANENTE</p>`;
+                successMsg += `<p style="font-size: 1.2rem; color: #166534; font-weight: 700; margin-bottom: 16px;">🎯 SEU DOI ÚNICO E PERMANENTE</p>`;
                 successMsg += `</div>`;
                 successMsg += `<div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">`;
                 successMsg += `<a href="https://doi.org/${published.doi}" target="_blank" style="color: #667eea; word-break: break-all; font-family: 'Courier New', monospace; font-size: 1.3rem; font-weight: bold; display: block; text-align: center;">${published.doi}</a>`;
                 successMsg += `</div>`;
-                successMsg += `<p style="margin-top: 16px; color: #166534; font-size: 1rem; text-align: center; font-weight: 600;">✅ Use este DOI único para citar seu trabalho em currículos, Lattes e publicações!</p>`;
+                successMsg += `<p style="margin-top: 16px; color: #166534; font-size: 1rem; text-align: center; font-weight: 600;">✅ Este é o DOI único do seu artigo - use para citar seu trabalho em currículos, Lattes e publicações!</p>`;
                 successMsg += `</div>`;
                 
                 successMsg += `<div style="background: white; padding: 20px; border-radius: 12px; border: 2px solid #93c5fd; margin: 20px 0;">`;
@@ -1326,10 +1315,10 @@
                 
                 successMsg += `<div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); padding: 20px; border-radius: 12px; border: 2px solid #3b82f6; margin-top: 24px; text-align: center;">`;
                 successMsg += `<p style="color: #1e40af; font-weight: 700; font-size: 1.2rem; margin: 0;">✨ PUBLICAÇÃO OFICIAL REGISTRADA</p>`;
-                successMsg += `<p style="color: #1e40af; margin: 12px 0 0 0; font-size: 1rem;">Seu artigo está permanentemente indexado no Zenodo com um único DOI oficial</p>`;
+                successMsg += `<p style="color: #1e40af; margin: 12px 0 0 0; font-size: 1rem;">Seu artigo está permanentemente indexado no Zenodo com um DOI único e oficial</p>`;
                 successMsg += `<div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #93c5fd;">`;
                 successMsg += `<p style="color: #4b5563; font-size: 0.9rem; margin: 0;"><i class="fas fa-check-circle" style="color: #10b981;"></i> Indexado no Google Scholar</p>`;
-                successMsg += `<p style="color: #4b5563; font-size: 0.9rem; margin: 4px 0 0 0;"><i class="fas fa-check-circle" style="color: #10b981;"></i> Citável via DOI permanente</p>`;
+                successMsg += `<p style="color: #4b5563; font-size: 0.9rem; margin: 4px 0 0 0;"><i class="fas fa-check-circle" style="color: #10b981;"></i> Citável via DOI único e permanente</p>`;
                 successMsg += `<p style="color: #4b5563; font-size: 0.9rem; margin: 4px 0 0 0;"><i class="fas fa-check-circle" style="color: #10b981;"></i> Acesso aberto garantido</p>`;
                 successMsg += `</div>`;
                 successMsg += `</div>`;
