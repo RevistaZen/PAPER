@@ -529,6 +529,61 @@
             font-weight: 600;
             margin-left: 8px;
         }
+
+        /* ORCID Badge Styles */
+        .orcid-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #a6ce39;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+            text-decoration: none;
+        }
+
+        .orcid-badge i {
+            font-size: 14px;
+        }
+
+        .orcid-info {
+            background: #f0f9ff;
+            border-left: 4px solid #a6ce39;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .orcid-info h3 {
+            color: #2d5c1e;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .orcid-field {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            color: #495057;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .orcid-field .copy-btn {
+            background: #a6ce39;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+        }
         
         /* Footer */
         footer {
@@ -731,7 +786,12 @@
                             <i class="fas fa-file-upload"></i>
                         </div>
                         <div>
-                            <h2>Zenodo Article Uploader <span class="zenodo-badge">LaTeX Ready</span></h2>
+                            <h2>Zenodo Article Uploader 
+                                <span class="zenodo-badge">LaTeX Ready</span>
+                                <a href="https://orcid.org/0009-0007-6299-2008" target="_blank" class="orcid-badge">
+                                    <i class="fab fa-orcid"></i> ORCID RevistaZen
+                                </a>
+                            </h2>
                             <p style="color: #718096;">📤 Submeta seus artigos científicos ao Zenodo automaticamente</p>
                         </div>
                     </div>
@@ -745,6 +805,28 @@
                             <li><strong>Clique em "Submeter"</strong> para obter seu DOI permanente!</li>
                         </ol>
                     </div>
+                </div>
+
+                <!-- ORCID Information -->
+                <div class="card">
+                    <h2 style="margin-bottom: 16px; font-size: 20px;">
+                        <i class="fab fa-orcid" style="color: #a6ce39;"></i> ORCID da RevistaZen
+                    </h2>
+                    
+                    <div class="orcid-info">
+                        <h3>🔗 Identificador ORCID Oficial</h3>
+                        <p style="color: #2d5c1e; margin: 8px 0;">
+                            Todos os artigos publicados através da RevistaZen incluem automaticamente o ORCID institucional para garantir a identificação única e permanente da publicação.
+                        </p>
+                    </div>
+                    
+                    <div class="orcid-field">
+                        <span>https://orcid.org/0009-0007-6299-2008</span>
+                        <button class="copy-btn" onclick="copyOrcid()">
+                            <i class="fas fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                    <p class="help-text">Este ORCID é fixo e será incluído automaticamente em todas as publicações da RevistaZen</p>
                 </div>
 
                 <!-- Token Configuration -->
@@ -761,8 +843,6 @@
                     
                     <input type="hidden" id="useSandbox" value="false">
                     <input type="hidden" id="zenodoToken" value="cYYoVEoLqiIZDyeZ5A88SCxhlbvDXwmT7Tma1aQnYVAWeGtqlWp0KsSbWTHC">
-                    
-
                 </div>
 
                 <!-- File Upload -->
@@ -845,6 +925,11 @@
                 <div class="footer-column">
                     <h3>RevistaZen</h3>
                     <p>Plataforma de publicação científica com DOI gratuito através da integração com o Zenodo.</p>
+                    <div style="margin-top: 10px;">
+                        <a href="https://orcid.org/0009-0007-6299-2008" target="_blank" class="orcid-badge" style="font-size: 11px; padding: 6px 10px;">
+                            <i class="fab fa-orcid"></i> ORCID: 0009-0007-6299-2008
+                        </a>
+                    </div>
                 </div>
                 <div class="footer-column">
                     <h3>Links Rápidos</h3>
@@ -873,7 +958,7 @@
                 </div>
             </div>
             <div class="copyright">
-                <p>&copy; 2025 RevistaZen. Todos os direitos reservados. | Powered by Zenodo & CERN</p>
+                <p>&copy; 2025 RevistaZen. Todos os direitos reservados. | Powered by Zenodo & CERN | ORCID: 0009-0007-6299-2008</p>
             </div>
         </div>
     </footer>
@@ -890,6 +975,10 @@
             affiliation: '',
             orcid: ''
         }];
+
+        // ORCID da RevistaZen fixo
+        const REVISTAZEN_ORCID = '0009-0007-6299-2008';
+        const REVISTAZEN_ORCID_URL = 'https://orcid.org/0009-0007-6299-2008';
 
         // Page Navigation
         function showPage(pageName) {
@@ -912,6 +1001,15 @@
                 document.getElementById('uploadPage').classList.add('active');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
+        }
+
+        // Copy ORCID to clipboard
+        function copyOrcid() {
+            navigator.clipboard.writeText(REVISTAZEN_ORCID_URL).then(() => {
+                showStatus('✅ ORCID copiado para a área de transferência!', 'success');
+            }).catch(err => {
+                showStatus('❌ Erro ao copiar ORCID', 'error');
+            });
         }
 
         // Setup drag and drop
@@ -1196,16 +1294,6 @@
             }
         }
 
-        // Test connection with Zenodo (removed - not needed for users)
-        async function testConnection() {
-            showStatus('ℹ️ O sistema está configurado e pronto para uso. Faça upload do seu PDF para começar!', 'info');
-        }
-
-        // Use custom token (removed - not needed)
-        function useCustomToken() {
-            showStatus('ℹ️ O sistema usa configuração padrão da RevistaZen.', 'info');
-        }
-
         // Submit to Zenodo
         async function submitToZenodo() {
             const token = document.getElementById('zenodoToken').value;
@@ -1266,13 +1354,23 @@
                 showStatus('📋 Atualizando metadados...', 'info');
                 const keywordsArray = keywords.split(',').map(k => k.trim()).filter(k => k.length > 0);
                 
+                // Adiciona o ORCID da RevistaZen automaticamente como um autor institucional
+                const allCreators = [
+                    ...authors.filter(a => a.name.trim().length > 0),
+                    {
+                        name: "RevistaZen",
+                        affiliation: "Plataforma de Publicação Científica",
+                        orcid: REVISTAZEN_ORCID
+                    }
+                ];
+                
                 const metadata = {
                     metadata: {
                         title: title,
                         upload_type: 'publication',
                         publication_type: 'article',
                         description: description,
-                        creators: authors.filter(a => a.name.trim().length > 0),
+                        creators: allCreators,
                         keywords: keywordsArray.length > 0 ? keywordsArray : undefined
                     }
                 };
@@ -1333,6 +1431,7 @@
                 successMsg += `<p style="color: #4b5563; font-size: 0.9rem; margin: 0;"><i class="fas fa-check-circle" style="color: #10b981;"></i> Indexado no Google Scholar</p>`;
                 successMsg += `<p style="color: #4b5563; font-size: 0.9rem; margin: 4px 0 0 0;"><i class="fas fa-check-circle" style="color: #10b981;"></i> Citável via DOI permanente</p>`;
                 successMsg += `<p style="color: #4b5563; font-size: 0.9rem; margin: 4px 0 0 0;"><i class="fas fa-check-circle" style="color: #10b981;"></i> Acesso aberto garantido</p>`;
+                successMsg += `<p style="color: #4b5563; font-size: 0.9rem; margin: 4px 0 0 0;"><i class="fab fa-orcid" style="color: #a6ce39;"></i> ORCID da RevistaZen incluído</p>`;
                 successMsg += `</div>`;
                 successMsg += `</div>`;
                 
